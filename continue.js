@@ -56,8 +56,12 @@ function playNotes(noteList) {
     createSynth(setSythn(0))
     noteList.notes.forEach(note => {
         play(note);
-        g.gain.setTargetAtTime(0, audioCtx.currentTime+ start+0.2, 1)
     });
+    console.log("end" + start+0.2)
+    g.gain.setTargetAtTime(0, audioCtx.currentTime+ start+0.2+1, 1)
+    melody = []
+    start = 0;
+    last = 0;
 }
 
 function play(note) {
@@ -100,10 +104,6 @@ function genNotes() {
     music_rnn
         .continueSequence(qns, rnn_steps, rnn_temperature)
         .then((sample) => playNotes(mm.sequences.concatenate([qns,sample])));
-
-    melody = []
-    start = 0;
-    last = 0;
 }
 
 function midiToFreq(m) {
