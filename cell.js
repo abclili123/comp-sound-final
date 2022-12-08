@@ -21,7 +21,6 @@ function setup() {
     w = 20;
     // Calculate columns and rows
     columns = floor(width / w);
-    console.log(columns)
     rows = floor(height / w);
     // Wacky way to make a 2D array is JS
     board = new Array(columns);
