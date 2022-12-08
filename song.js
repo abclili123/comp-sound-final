@@ -11,7 +11,9 @@ const playButton = document.getElementById("mp3")
 playButton.addEventListener('click', async function () {
     var audioBuffer = await loadBuffer('track.mp3');
     const source = audioCtx.createBufferSource();
-    source.connect(audioCtx.destination);
+    const gain = audioCtx.createGain();
+    gain.gain.setTargetAtTime(0.7, audioCtx.currentTime, 0.1)
+    source.connect(gain).connect(audioCtx.destination);
     source.buffer = audioBuffer;
     source.start();
 
