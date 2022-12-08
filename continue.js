@@ -1,27 +1,77 @@
 var melody = [];
 let start = 0;
-let example;
+let magentaSynth = [];
 let g;
+let mLength = 0;
 let last = 0;
+
+function createSynth(synth) {
+    g = audioCtx.createGain();
+    g.connect(globalGain)
+    g.gain.setValueAtTime(0, audioCtx.currentTime);
+
+    let lfo;
+    let lfoGain;
+    // initiate lfo
+    if(synth['lfo']){
+        lfo = audioCtx.createOscillator();
+        lfo.frequency.value = 2;
+        lfoGain = audioCtx.createGain();
+        lfoGain.gain.value = 8;
+        lfo.start();
+    }
+
+    let modulationIndex;
+    //initiate FM if checked
+    if(synth['fm'] > 0){
+        modulationIndex = audioCtx.createGain();
+        const fmFreq = audioCtx.createOscillator();
+        modulationIndex.gain.value = synth['fmInd'];
+        fmFreq.frequency.value = synth['fm'];
+        fmFreq.connect(modulationIndex);
+        fmFreq.start();
+    }
+
+    // additive synthesis
+    for(let i = 0; i<=synth['add']; i++){
+        magentaSynth[i] = audioCtx.createOscillator();
+        magentaSynth[i].type =synth['type'];
+
+        if(synth['fm'] > 0) {
+            modulationIndex.connect(magentaSynth[i].frequency)
+        }
+
+        if(synth['lfo']){
+            lfo.connect(lfoGain).connect(magentaSynth[i].frequency);
+        }
+        magentaSynth[i].connect(g)
+        magentaSynth[i].start();
+        mLength = magentaSynth.length
+    }
+}
 
 function playNotes(noteList) {
     noteList = mm.sequences.unquantizeSequence(noteList)
     console.log(noteList.notes)
-    example = audioCtx.createOscillator();
-    g = audioCtx.createGain();
-    g.gain.setValueAtTime(0, audioCtx.currentTime)
-    example.connect(g);
-    g.connect(globalGain);
-    example.start();
+    createSynth(setSythn(0))
     noteList.notes.forEach(note => {
         play(note);
+        g.gain.setTargetAtTime(0, audioCtx.currentTime+ start+0.2, 1)
     });
 }
 
 function play(note) {
-    let offset = 0.9 //it takes a bit of time to queue all these events
-    g.gain.setTargetAtTime(0.5, audioCtx.currentTime+ note.startTime+offset, 1);
-    example.frequency.setValueAtTime(midiToFreq(note.pitch), audioCtx.currentTime+ note.startTime + offset)
+    let offset = 1 //it takes a bit of time to queue all these events
+    g.gain.setTargetAtTime(0.2/mLength, audioCtx.currentTime+ note.startTime+offset, 0.1);
+    for(let i = 0; i<mLength; i++) {
+        if(i>0){
+            magentaSynth[i].frequency.setValueAtTime(midiToFreq(note.pitch) + Math.random() * 15, audioCtx.currentTime+ note.startTime + offset)
+        }
+        else{
+            magentaSynth[i].frequency.setValueAtTime(midiToFreq(note.pitch), audioCtx.currentTime+ note.startTime + offset)
+        }
+    }
+
     if(last !== note.pitch){
         g.gain.setTargetAtTime(0, audioCtx.currentTime+ note.endTime+offset-0.05, 1)
     }
@@ -46,6 +96,7 @@ function genNotes() {
 
     // we continue the sequence, which will take some time (thus is run async)
     // "then" when the async continueSequence is done, we play the notes
+    mLength = 0;
     music_rnn
         .continueSequence(qns, rnn_steps, rnn_temperature)
         .then((sample) => playNotes(mm.sequences.concatenate([qns,sample])));
@@ -57,6 +108,17 @@ function genNotes() {
 
 function midiToFreq(m) {
     return Math.pow(2, (m - 69) / 12) * 440;
+}
+
+function setSythn(key){
+    return {
+        'key': key,
+        'add': document.getElementById('additive').value,
+        'type': document.getElementById('wave').value,
+        'fm': document.getElementById('fm').value,
+        'fmInd': document.getElementById('fmInd').value,
+        'lfo': document.getElementById('lfo').checked,
+    };
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -93,22 +155,52 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     activeOscillators = {}
     activeGain = {}
+    let totalOsc = 1
+
+    const res = document.getElementById("res")
+    res.addEventListener('click', function() {
+        document.getElementById('additive').value = 0
+        document.getElementById('wave').value = 'sine'
+        document.getElementById('fm').value = 0
+        document.getElementById('fmInd').value = 0
+        document.getElementById('lfo').checked = false
+    });
+
+    const preset1 = document.getElementById("preset1")
+    preset1.addEventListener('click', function() {
+        document.getElementById('additive').value = 2;
+        document.getElementById('wave').value = 'sine'
+        document.getElementById('fm').value = 0
+        document.getElementById('fmInd').value = 0
+        document.getElementById('lfo').checked = true
+    });
+
+    const preset2 = document.getElementById("preset2")
+    preset2.addEventListener('click', function() {
+        document.getElementById('additive').value = 0;
+        document.getElementById('wave').value = 'triangle'
+        document.getElementById('fm').value = 0
+        document.getElementById('fmInd').value = 0
+        document.getElementById('lfo').checked = true
+    });
+
 
     function keyDown(event) {
         const key = (event.detail || event.which).toString();
         if (keyboardFrequencyMap[key] && !activeOscillators[key]) {
-            playNote(key);
+            playNote(setSythn(key));
         }
-
         let magenta = document.getElementById('magenta').checked
         if(magenta){
-            melody.push({
-                pitch: keyboardFrequencyMap[key],
-                startTime: start,
-                endTime: start+0.5
-            });
-            start+=0.2;
-            console.log("push note " + keyboardFrequencyMap[key])
+            if(keyboardFrequencyMap[key] != undefined){
+                melody.push({
+                    pitch: keyboardFrequencyMap[key],
+                    startTime: start,
+                    endTime: start+0.5
+                });
+                start+=0.2;
+                console.log("push note " + keyboardFrequencyMap[key])
+            }
         }
 
         if(!magenta && start > 0 && key == 16){
@@ -122,38 +214,67 @@ document.addEventListener("DOMContentLoaded", function(event) {
         if (keyboardFrequencyMap[key] && activeOscillators[key]) {
             activeGain[key].gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + .5)
             activeGain[key].gain.setTargetAtTime(0, audioCtx.currentTime, 1)
+            totalOsc -= activeOscillators[key].length
             delete activeOscillators[key];
             delete activeGain[key];
         }
     }
 
-    function playNote(key) {
+    function playNote(synth) {
         const gainNode = audioCtx.createGain();
         gainNode.connect(globalGain)
         gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-        gainNode.gain.setTargetAtTime(0.5, audioCtx.currentTime, 1);
 
-        var notes = audioCtx.createOscillator();
-        notes.type = document.getElementById('wave').value
-        notes.frequency.setValueAtTime(midiToFreq(keyboardFrequencyMap[key]), audioCtx.currentTime)
-        notes.connect(gainNode)
-        notes.start();
+        let oscs = [];
 
+        let lfo;
+        let lfoGain;
+        // initiate lfo
+        if(synth['lfo']){
+            lfo = audioCtx.createOscillator();
+            lfo.frequency.value = 2;
+            lfoGain = audioCtx.createGain();
+            lfoGain.gain.value = 8;
+            lfo.start();
+        }
+
+        let modulationIndex;
         //initiate FM if checked
-        let fm = document.getElementById('fm').value
-        let modulationIndex = audioCtx.createGain();
-        let fmInd = document.getElementById('fmInd').value
-        if(fm>0){
+        if(synth['fm'] > 0){
+            modulationIndex = audioCtx.createGain();
             const fmFreq = audioCtx.createOscillator();
-            modulationIndex.gain.value = fmInd;
-            fmFreq.frequency.value = fm;
+            modulationIndex.gain.value = synth['fmInd'];
+            fmFreq.frequency.value = synth['fm'];
             fmFreq.connect(modulationIndex);
-            modulationIndex.connect(notes.frequency)
             fmFreq.start();
         }
 
-        activeOscillators[key] = notes
-        activeGain[key] = gainNode
+        // additive synthesis
+        for(let i = 0; i<=synth['add']; i++){
+            oscs[i] = audioCtx.createOscillator();
+            oscs[i].type =synth['type'];
+            oscs[i].frequency.setValueAtTime(midiToFreq(keyboardFrequencyMap[synth['key']]), audioCtx.currentTime)
+            if(i>0){
+                oscs[i].frequency.setValueAtTime(midiToFreq(keyboardFrequencyMap[synth['key']]) + Math.random() * 15, audioCtx.currentTime)
+            }
+
+            if(synth['fm'] > 0) {
+                modulationIndex.connect(oscs[i].frequency)
+            }
+
+            if(synth['lfo']){
+                lfo.connect(lfoGain).connect(oscs[i].frequency);
+            }
+            oscs[i].connect(gainNode)
+            oscs[i].start();
+
+            totalOsc+=1;
+        }
+
+        gainNode.gain.setTargetAtTime(0.3/totalOsc, audioCtx.currentTime,0.1);
+
+        activeOscillators[synth['key']] = oscs
+        activeGain[synth['key']] = gainNode
     }
 });
 
