@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>final project</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0"></script>
-    <style>
-        #cell {
-            height: 320px;
-            width: 320px;
-            border: 1px solid blue;
-        }
-    </style>
 </head>
 <body>
-<div id="cellAut">
+
+<div class="container">
+
+<div class="child">
 <p>draw cells and press play. if board dies after play, reset board</p>
 <div id="cell"></div>
 <p>
@@ -24,10 +21,12 @@
     <button id="reset">reset</button>
 </p>
 </div>
-<div id="magentaSynth">
+
+<div class="child">
+
 <p>
     check magenta to record sequence. uncheck when finished. press shift to continue sequence
-    <br>
+    <div id="controller">
     <label for="magenta">magenta</label><input type="checkbox" id="magenta">
     <br>
     <label for="wave">wave </label><select id="wave">
@@ -41,16 +40,20 @@
     <br>
     <label for="fmInd">index of mod </label><input type="number" id="fmInd" value="0" min="0">
     <br>
-    <label for="lfo">activate lfo </label><input type="checkbox" id="lfo"></td>
-    <br>
     <label for="additive"># of partials </label><input type="number" id="additive" value="0" min="0">
     <br>
+    <label for="lfo">activate lfo </label><input type="checkbox" id="lfo">
+</p>
+    </div>
     <button id="res">reset</button>
     <button id="preset1">preset 1</button>
     <button id="preset2">preset 2</button>
-</p>
+    <br>
+    <button id="mp3">play track</button>
 </div>
-<button id="mp3">play</button>
+
+</div>
+
 </body>
 
 <script src="cell.js"></script>
