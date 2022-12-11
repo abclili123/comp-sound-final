@@ -36,6 +36,7 @@ function setup() {
     init()
 }
 
+// function for analyzing gain not over 1 (avoids clipping)
 var maxAlltime = 0
 function peak() {
     globalAnalyser.fftSize = 2048;
@@ -53,6 +54,7 @@ function peak() {
     requestAnimationFrame(peak);
 }
 
+// set up audio for board
 function initAudio(){
     audioCtx = new (window.AudioContext || window.webkitAudioContext);
     globalGain = audioCtx.createGain()
@@ -73,6 +75,7 @@ function initAudio(){
         oscs[i] = new Array(rows);
     }
 
+    // assign each cell a note in frequency
     if(rows == 16 && columns == 16){
         notes = new Array(columns);
         notes[0] = [36.71, 41.20, 46.25, 49.00, 55.00, 61.74, 69.30, 73.42]
