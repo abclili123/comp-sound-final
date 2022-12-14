@@ -58,7 +58,7 @@ function playNotes(noteList) {
         play(note);
     });
     console.log("end" + start+0.2)
-    g.gain.setTargetAtTime(0, audioCtx.currentTime+ start+0.2+1, 1)
+    g.gain.setTargetAtTime(0, audioCtx.currentTime+ (2*start)+0.2+1, 1)
     melody = []
     start = 0;
     last = 0;

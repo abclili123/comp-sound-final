@@ -19,9 +19,16 @@ button {
     margin: 10px;
 }
 
+button:hover {
+    background-color: hotpink;
+    border: 3px solid pink;
+    color: white;
+}
+
 .container{
     text-align: center;
-    margin-top: 50px;
+    margin: auto;
+    width: 90%;
 }
 
 .child{
@@ -42,10 +49,58 @@ button {
 #cell{
     position: relative;
     left: 30%;
-}
-
-#cell {
     height: 320px;
     width: 320px;
     border: 2px solid #ff42e5;
+}
+
+#writeup{
+    font-family: "Arial";
+    font-size: 20px;
+    margin: auto;
+    width: 50%;
+    line-height: 2;
+    padding-top: 10px;
+}
+
+h1, h2{
+    margin: auto;
+    width: 50%;
+    text-align: center;
+    padding: 10px;
+}
+
+br {
+    display: block; /* makes it have a width */
+    content: ""; /* clears default height */
+    margin-top: 20px; /* change this to whatever height you want it */
+}
+
+.caption{
+    display: flex;
+    justify-content: center;
+    font-family: "Arial Black";
+}
+
+#names{
+    display: flex;
+    justify-content: right;
+    text-align: left;
+    font-family: "Arial Black";
+    letter-spacing: 2px;
+    color: #e025bb;
+}
+
+img {
+    display: block;
+    width: 60%;
+    height: auto;
+    margin: auto;
+}
+
+iframe {
+    display: block;
+    width: 80%;
+    height: 600px;
+    margin: auto;
 }

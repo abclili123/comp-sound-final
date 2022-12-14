@@ -1,10 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>blog post</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-$END$
+<h1>An Exploration Of Improvisation:</h1>
+<h2>Composition In Web Audio And Building Digital Instruments</h2>
+<p id="writeup">
+  For our final project, we decided to create a song that the listener can play along with. This was accomplished by first coding sounds in WebAudio and sampling them to be mixed into a song in Logic. The second part was developing two digital instruments: an interactive cellular automata and a synth which pipes input into Magenta.js to continue the melody.
+  <br>
+  In order to make the beat, Sun coded all sounds from scratch in WebAudio. She researched how to create drum sounds, and took inspiration from online sources. She also used her synth from lab2 for the keyboard sounds. Then, she recorded the sounds individually using a zoom recording, and then pasted the audio files into Logic Pro X. She used a sampler in Logic to create the beat, and added effects such as delay and reverb to the sounds. After experimenting with several ideas, she finally created a beat that she was happy with.
+  <br>
+  Press “play track” to play the track with a loop. After playing, the button turns into a pause/ play button!
+  <br>
+  Inspiration for the digital instruments and automated composition comes from the pressure of improvising. Making music can be really hard, especially when it’s on the spot. We wanted to create an instrument that could be played by the user while giving leeway to allow the program to take over, reducing the anxiety of the improv experience.
+  <br>
+  Our program works as follows:
+  <br>
+  The box on the left contains the cellular automata defined by rules from the Game of Life. Simply click within the box to turn on cells. When you are done, press play to see the cells interact. As they turn on and off, the frequency of the cell will as well. Need inspiration? Hit random fill to automatically fill the boxes. If the board dies after you hit play, hit reset to start over. The pause button pauses the cellular automata and can be resumed with the play button. The reset button clears the board. You can also turn on cells while the animation is on.
+  <br>
+  <img src="assets/shapes.png" alt="shapes drawn on cellular automata board">
+  <br>
+  <span class="caption">Try playing these shapes for inspiration!</span>
+  <br>
+  The program also has a synth! Use keys on the keyboard to play the synth like a piano. Use the control panel to apply frequency modulation, additive synthesis, or a low frequency oscillator or change the waveform. Now sure what sounds good? Click on one of our presets to populate the control panel!
+  <br>
+  <img src="assets/control.png" alt="synth's control panel">
+  <span class="caption">Control panel!</span>
+  <br>
+  Follow these steps to use the synth with Magenta.js: Check the box next to “magenta.” Play your melody. Uncheck the box to stop recording. Press shift to play Magenta’s output. It will start to play one second after hitting shift.
+  <br>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/ZNuzQ6FWiec" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <br>
+  <span class="caption">video demo</span>
+  <br>
+  Thank you for reading!
+  <br>
+  <img src="assets/heart.gif" alt="cellular automata heart">
+  <span id="names">~Lili and Sunny</span>
+</p>
+
 </body>
 </html>
