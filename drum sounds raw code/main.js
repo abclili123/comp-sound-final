@@ -154,24 +154,30 @@ function playPreset1(){
   osc2.start();
 }
 
-// function playPreset2(){
-//   globalGain.gain.value = 0.4;
-//   var carrier = audioCtx.createOscillator();
-//   var modulatorFreq = audioCtx.createOscillator();
-//   modulatorFreq.frequency.value = 100;
-//   carrier.frequency.value = 440;
+function playPreset2(){
+  globalGain.gain.value = 0.4;
+  var osc1 = audioCtx.createOscillator();
+  osc1.type = "triangle";
+  var gain1= audioCtx.createGain();
 
-//   const modulated = audioCtx.createGain();
-//   const depth = audioCtx.createGain();
-//   depth.gain.value = 0.5 
-//   modulated.gain.value = 1.0 - depth.gain.value; 
+  osc1.connect(gain1);
+  gain1.connect(globalGain);
 
-//   modulatorFreq.connect(depth).connect(modulated.gain); 
-//   modulated.connect(globalGain);
-  
-//   carrier.start();
-//   modulatorFreq.start();
-// }
+  osc1.frequency.value = 500;
+  gain1.gain.setTargetAtTime(0.2, audioCtx.currentTime,0.1);
+
+  gain1.gain.setTargetAtTime(0.1, audioCtx.currentTime + 0.1,0.1);
+
+  gain1.gain.setTargetAtTime(0, audioCtx.currentTime + 0.1,0.5); //can delete this and replace with keyUp
+
+  var lfo = audioCtx.createOscillator();
+  lfo.frequency.value = 2;
+  lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 8;
+  lfo.connect(lfoGain).connect(osc1.frequency);
+  lfo.start();
+  osc1.start();
+}
 
 const kick = document.getElementById('kick');
 
